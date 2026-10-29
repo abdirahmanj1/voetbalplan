@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Voetbalplan</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f2f7f3;
+        --kaart: #fff;
+        --tekst: #10261a;
+        --zacht: #5b6f63;
+        --groen: #1f9d55;
+        --rood: #d64545;
+        --rand: #d5e2d9;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0c1a12;
+          --kaart: #14281c;
+          --tekst: #eaf5ee;
+          --zacht: #9db5a5;
+          --rand: #25422f;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--tekst);
+        font:
+          16px/1.5 system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+      }
+      main {
+        max-width: 480px;
+        margin: 0 auto;
+        padding: 16px;
+      }
+      h1 {
+        font-size: 1.6rem;
+        margin: 8px 0 16px;
+      }
+      h2 {
+        font-size: 0.9rem;
+        margin: 0 0 8px;
+        color: var(--zacht);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .kaart {
+        background: var(--kaart);
+        border: 1px solid var(--rand);
+        border-radius: 14px;
+        padding: 16px;
+        margin-bottom: 14px;
+      }
+      .groot {
+        font-size: 1.35rem;
+        font-weight: 700;
+        text-transform: capitalize;
+      }
+      .rij {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+      .knop {
+        flex: 1;
+        text-align: center;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 12px 14px;
+        background: var(--groen);
+        color: #fff;
+        text-decoration: none;
+      }
+      .knop.rood {
+        background: var(--rood);
+      }
+      .knop.grijs {
+        background: var(--rand);
+        color: var(--tekst);
+      }
+      a:focus-visible {
+        outline: 3px solid var(--tekst);
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>⚽ Voetbalplan</h1>
+      <section class="kaart">
+        <h2>Volgende match</h2>
+        <div class="groot" id="datum"></div>
+        <div>om <strong id="uur"></strong></div>
+        <p style="margin: 12px 0 0">
+          <strong id="plaats"></strong><br /><span id="adres"></span>
+        </p>
+        <p id="opmerking" style="color: var(--zacht)"></p>
+        <div class="rij">
+          <a class="knop" id="maps" target="_blank" rel="noopener"
+            >📍 Open in Maps</a
+          >
+        </div>
+      </section>
+      <section class="kaart">
+        <h2>Kom jij?</h2>
+        <p style="margin-top: 0">
+          Tik op een knop. WhatsApp opent met je antwoord klaar. Kies de groep
+          en verstuur.
+        </p>
+        <div class="rij" style="margin-top: 0">
+          <a class="knop" id="ja" target="_blank" rel="noopener">✅ Ik kom</a>
+          <a class="knop rood" id="nee" target="_blank" rel="noopener"
+            >❌ Ik kom niet</a
+          >
+        </div>
+        <div class="rij">
+          <a class="knop grijs" id="deel" target="_blank" rel="noopener"
+            >Deel het plan in WhatsApp</a
+          >
+        </div>
+      </section>
+      <script src="plan.js"></script>
+      <script>
+        const $ = (id) => document.getElementById(id);
+        const [j, m, d] = PLAN.datum.split("-").map(Number);
+        const datum = new Date(j, m - 1, d).toLocaleDateString("nl-BE", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+        });
+        const kaart =
+          "https://www.google.com/maps/search/?api=1&query=" +
+          encodeURIComponent(PLAN.adres);
+        const wa = (t) => "https://wa.me/?text=" + encodeURIComponent(t);
+        const wanneer = datum + " om " + PLAN.uur + " bij " + PLAN.plaats;
+        $("datum").textContent = datum;
+        $("uur").textContent = PLAN.uur;
+        $("plaats").textContent = PLAN.plaats;
+        $("adres").textContent = PLAN.adres;
+        $("opmerking").textContent = PLAN.opmerking || "";
+        $("maps").href = kaart;
+        $("ja").href = wa("✅ Ik kom voetballen op " + wanneer);
+        $("nee").href = wa("❌ Ik kan niet komen voetballen op " + wanneer);
+        $("deel").href = wa(
+          "⚽ Voetbal: " + wanneer + "\n📍 " + PLAN.adres + "\n" + kaart,
+        );
+      </script>
+    </main>
+  </body>
+</html>
